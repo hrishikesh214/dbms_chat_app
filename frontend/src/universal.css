@@ -1,0 +1,18 @@
+/* imports */
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web:wght@200&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300&display=swap");
+
+/* define rule */
+:root {
+	--background: #003e55;
+	--primary: #00b7ff;
+	--secondary: #00b7ff77;
+	--default-font: "Merriweather Sans", sans-serif;
+	--field: #2b444e;
+}
+
+body {
+	background-color: var(--background);
+	font-family: var(--default-font);
+	color: white;
+}

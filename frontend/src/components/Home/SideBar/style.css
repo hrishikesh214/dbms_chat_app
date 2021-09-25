@@ -1,0 +1,31 @@
+.side-bar {
+	width: 25%;
+	height: 100%;
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+	background-color: #f1f1f1;
+	color: var(--primary);
+	font-weight: bold;
+	display: flex;
+	flex-direction: column;
+	overflow-y: auto;
+}
+.side-bar-header {
+	border-top-left-radius: 10px;
+	height: 50px;
+	background-color: var(--background);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.list-chat {
+	cursor: pointer;
+	color: white;
+	height: 50px;
+	background-color: rgba(0, 0, 0, 0.3);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
