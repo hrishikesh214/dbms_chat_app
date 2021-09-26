@@ -8,19 +8,26 @@ const defaults = [
 
 const links = [
 	{
-		home: `http://localhost:${defaults[0].port}`,
+		home: `http://localhost:${defaults[0].port}/`,
 	},
 ]
 
 const api = [
 	{
 		base: "http://localhost:5000/",
+		chats: "chats",
+		user: "user",
 	},
 ]
 
 const _links = links[selector]
 const _defaults = {
 	...defaults[selector],
+	network_error: {
+		message: "Network error",
+		code: 500,
+		full: "Network error",
+	},
 }
 const _api = api[selector]
 

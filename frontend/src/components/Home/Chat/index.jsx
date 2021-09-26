@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams } from "react-router-dom"
+import { defaults, api } from "../../config"
+import axios from "axios"
 import "./style.css"
 
 const Chat = ({ user_id }) => {
 	const [messages, setMessages] = useState([])
-	const [receiver, setReceiver] = useState("gghrishi")
-	const [chat_id, set_chat_id] = useState(null)
+	const [receiver, setReceiver] = useState("")
 	const { cid } = useParams()
-	const [to_load, set_to_load] = useState(true)
+	const [to_load, set_to_load] = useState(cid !== undefined)
 
 	const bottomRef = useRef(null)
 
@@ -18,51 +19,51 @@ const Chat = ({ user_id }) => {
 	}
 
 	useEffect(() => {
-		set_chat_id(cid ?? null)
 		load_messages()
+		setInterval(worker, 2000)
 	}, [])
 
+	const worker = async () => {
+		if (cid === null) return
+		try {
+			let r = await axios({
+				method: "get",
+				url: api.base + api.chats + `/${cid}/${user_id}/refreshcheck`,
+			})
+			if (r.status !== 200) throw defaults.network_error
+			if (!r.data.ok) throw r.data.error
+			if (r.data.result.refresh) await load_messages()
+		} catch (err) {
+			console.log(err)
+		}
+	}
+
 	const load_messages = async () => {
+		if (cid === null) return
 		// fetch from api
-		setTimeout(() => {
-			setMessages([
-				{
-					message: "hello",
-					user_id: 777,
-					time: "12:00",
-				},
-				{
-					message: "hi",
-					user_id: 56,
-					time: "12:02",
-				},
-				{
-					message: "hello",
-					user_id: 777,
-					time: "12:03",
-				},
-				{
-					message:
-						"Conditional execution in assembly language is accomplished by several looping and branching instructions. These instructions can change the flow of control in a program. Conditional execution is observed in two scenarios −",
-					user_id: 56,
-					time: "12:02",
-				},
-				{
-					message:
-						"Conditional execution in assembly language is accomplished by several looping and branching instructions. These instructions can change the flow of control in a program. Conditional execution is observed in two scenarios −",
-					user_id: 56,
-					time: "12:02",
-				},
-				{
-					message:
-						"Conditional execution in assembly language is accomplished by several looping and branching instructions. These instructions can change the flow of control in a program. Conditional execution is observed in two scenarios −",
-					user_id: 777,
-					time: "12:02",
-				},
-			])
-		}, 2000)
-		set_to_load(false)
-		setTimeout(scroll_bottom, 2000)
+		try {
+			let r = await axios({
+				method: "get",
+				url: api.base + api.chats + `/${cid}/messages/${user_id}`,
+			})
+			if (r.status !== 200) throw defaults.network_error
+			if (!r.data.ok) throw r.data.error
+			// console.log(r.data)
+			setMessages(r.data.result)
+			let done = r.data.result.length - 1
+			while (done >= 0) {
+				if (r.data.result[done].user_id !== user_id) {
+					setReceiver(r.data.result[done].username)
+					break
+				}
+				done--
+			}
+
+			set_to_load(false)
+			setTimeout(scroll_bottom, 800)
+		} catch (err) {
+			console.log(err)
+		}
 	}
 
 	const send_msg = async () => {
@@ -74,12 +75,23 @@ const Chat = ({ user_id }) => {
 		])
 		// console.log(msg.value)
 		//send to api
+		try {
+			let r = await axios({
+				method: "post",
+				url: api.base + api.chats + `/${cid}/messages/${user_id}`,
+				data: { msg: msg.value },
+			})
+			if (r.status !== 200) throw defaults.network_error
+			if (!r.data.ok) throw r.data.error
+		} catch (err) {
+			console.log(err)
+		}
 		setTimeout(scroll_bottom, 200)
 		msg.value = ""
 	}
 	return (
 		<>
-			{chat_id === null ? (
+			{cid === undefined ? (
 				<div className="main-content">
 					<div className="no-chat">
 						<h1>No Chat Selected</h1>
@@ -101,6 +113,7 @@ const Chat = ({ user_id }) => {
 							<div className="message-container">
 								{messages.map((message, index) => (
 									<div
+										key={index}
 										className={`message-wrapper ${
 											message.user_id === user_id
 												? "my-msg"

@@ -14,7 +14,7 @@ const defaults = [
 		dbconfig: {
 			user: "root",
 			host: "localhost",
-			database: "",
+			database: "dbms_chat",
 			password: "",
 		},
 	},
