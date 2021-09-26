@@ -4,17 +4,28 @@ const defaults = [
 	{
 		port: 3000,
 	},
+	{
+		port: 80,
+	},
 ]
 
 const links = [
 	{
 		home: `http://localhost:${defaults[0].port}/`,
 	},
+	{
+		home: `http://13.68.149.35:${defaults[0].port}/`,
+	},
 ]
 
 const api = [
 	{
 		base: "http://localhost:5000/",
+		chats: "chats",
+		user: "user",
+	},
+	{
+		base: "http://13.68.149.35:5000/",
 		chats: "chats",
 		user: "user",
 	},
