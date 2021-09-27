@@ -14,7 +14,7 @@ const links = [
 		home: `http://localhost:${defaults[0].port}/`,
 	},
 	{
-		home: `http://13.68.149.35:${defaults[0].port}/`,
+		home: `http://40.76.84.143:${defaults[1].port}/`,
 	},
 ]
 
@@ -25,7 +25,7 @@ const api = [
 		user: "user",
 	},
 	{
-		base: "http://13.68.149.35:5000/",
+		base: "http://40.76.84.143:5000/",
 		chats: "chats",
 		user: "user",
 	},

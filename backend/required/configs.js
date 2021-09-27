@@ -22,7 +22,7 @@ const defaults = [
 		port: 5000,
 		dbconfig: {
 			user: "root",
-			host: "13.68.149.35",
+			host: "40.76.84.143",
 			database: "dbms_chat",
 			password: "",
 		},
@@ -37,7 +37,7 @@ const links = [
 		home: `http://localhost:3000/`,
 	},
 	{
-		home: `http://13.68.149.35:3000/`,
+		home: `http://40.76.84.143/`,
 	},
 ]
 
@@ -49,7 +49,7 @@ const api = [
 		base: `http://localhost:${defaults[0].port}/`,
 	},
 	{
-		base: `http://13.68.149.35:${defaults[0].port}/`,
+		base: `http://40.76.84.143:${defaults[0].port}/`,
 	},
 ]
 
