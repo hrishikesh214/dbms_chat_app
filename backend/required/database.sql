@@ -19,7 +19,7 @@ create table if not exists chats(
     id int primary key auto_increment,
     p1 int not null,
     p2 int not null,
-    last_msg text not null default "",
+    last_msg text,
     last_msg_time timestamp not null default current_timestamp,
     un1 int not null default 0,
     un2 int not null default 0,
@@ -51,10 +51,16 @@ for each row
 begin
     declare p1_id int;
     declare p2_id int;
+    declare rec_id int;
     declare c_id int;
     set c_id = new.chat_id;
+    select get_chat_reciever_id(c_id, new.sender_id) into rec_id;
     select p1, p2 into p1_id, p2_id from chats where id = c_id;
-    update chats set last_msg = new.msg, last_msg_time = new.sent_at, un1 = un1 + 1, un2 = un2 + 1 where id = new.chat_id;
+    if rec_id = p1_id then
+        update chats set last_msg = new.msg, last_msg_time = new.sent_at, un1 = un1 + 1 where id = new.chat_id;
+    else
+    update chats set last_msg = new.msg, last_msg_time = new.sent_at, un2 = un2 + 1 where id = new.chat_id;
+    end if;
     update people set to_refresh = 1 where id = p1_id or id = p2_id;
 end//
 delimiter ;
@@ -79,7 +85,17 @@ drop procedure if exists make_online;
 delimiter //
 create procedure make_online(pid int)
 begin
+    declare done int default 0;
+    declare pid2 int;
+    declare reciever_selector cursor for select get_chat_reciever_id(id, pid) from chats where p1 = pid or p2 = pid;
+    declare continue handler for not found set done = 1;
     update people set status = 1 where id = pid;
+    open reciever_selector;
+    repeat fetch reciever_selector into pid2;
+    update people set to_refresh = 1 where id = pid2;
+    until done 
+    end repeat;
+    close reciever_selector;
 end//
 delimiter ;
 
@@ -88,7 +104,17 @@ drop procedure if exists make_offline;
 delimiter //
 create procedure make_offline(pid int)
 begin
+    declare done int default 0;
+    declare pid2 int;
+    declare reciever_selector cursor for select get_chat_reciever_id(id, pid) from chats where p1 = pid or p2 = pid;
+    declare continue handler for not found set done = 1;
     update people set status = 0 where id = pid;
+    open reciever_selector;
+    repeat fetch reciever_selector into pid2;
+    update people set to_refresh = 1 where id = pid2;
+    until done 
+    end repeat;
+    close reciever_selector;
 end//
 delimiter ;
 
@@ -124,6 +150,7 @@ begin
     declare pid int default 0;
     insert into people(username, password) values(uname, pass);
     select LAST_INSERT_ID() into pid;
+    call make_online(pid);
     return pid;
 end//
 delimiter ;
@@ -136,6 +163,9 @@ returns int
 begin
     declare pid int default 0;
     select id into pid from people where username = uname and password = pass;
+    if pid > 0 then
+    call make_online(pid);
+    end if;
     return pid;
 end//
 delimiter ;
@@ -179,6 +209,44 @@ begin
         select get_username(p1) into uname from chats where id = cid;
     end if;
     return uname;
+end//
+delimiter ;
+
+-- get another person id from chat and person
+drop function if exists get_chat_reciever_id;
+delimiter //
+create function get_chat_reciever_id(cid int, pid int)
+returns int
+begin
+    declare uid1 int;
+    declare s_id int;
+    select p1 into s_id from chats where id = cid;
+    if pid = s_id then
+        select p2 into uid1 from chats where id = cid;
+    else
+        select p1 into uid1 from chats where id = cid;
+    end if;
+    return uid1;
+end//
+delimiter ;
+
+-- get another person status from chat and person
+drop function if exists get_chat_reciever_status;
+delimiter //
+create function get_chat_reciever_status(cid int, pid int)
+returns int
+begin
+    declare uid1 int;
+    declare st int default 0;
+    declare s_id int;
+    select p1 into s_id from chats where id = cid;
+    if pid = s_id then
+        select p2 into uid1 from chats where id = cid;
+    else
+        select p1 into uid1 from chats where id = cid;
+    end if;
+    select status into st from people where id = uid1;
+    return st;
 end//
 delimiter ;
 

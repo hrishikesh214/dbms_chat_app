@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { defaults, api } from "../../config"
-import useSound from "use-sound"
 import notify_tone from "./n_tone2.wav"
 import axios from "axios"
+import ago from "s-ago"
 import "./style.css"
 
 const Chat = ({ user_id }) => {
@@ -12,7 +12,6 @@ const Chat = ({ user_id }) => {
 	const { cid } = useParams()
 	const [to_load, set_to_load] = useState(cid !== undefined)
 	const [waitState, setWaitState] = useState(false)
-	// const [playNotify] = useSound(notify_tone)
 	const nt = new Audio(notify_tone)
 
 	const playNotify = () => {
@@ -63,7 +62,7 @@ const Chat = ({ user_id }) => {
 			})
 			if (r.status !== 200) throw defaults.network_error
 			if (!r.data.ok) throw r.data.error
-			// console.log(r.data)
+			console.log(r.data)
 			setMessages(r.data.result)
 			let done = r.data.result.length - 1
 			while (done >= 0) {
@@ -90,9 +89,9 @@ const Chat = ({ user_id }) => {
 		// add to present
 		setMessages([
 			...messages,
-			{ message: msg.value, user_id: user_id, time: "12:00" },
+			{ message: msg.value, user_id: user_id, time: Date.now() },
 		])
-		// console.log(msg.value)
+
 		//send to api
 		try {
 			let r = await axios({
@@ -149,7 +148,12 @@ const Chat = ({ user_id }) => {
 										}`}
 									>
 										<div className="message">
-											{message.message}
+											<div className="text">
+												{message.message}
+											</div>
+											<div className="time">
+												{ago(new Date(message.time))}
+											</div>
 										</div>
 									</div>
 								))}

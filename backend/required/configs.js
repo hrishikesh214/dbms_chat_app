@@ -22,9 +22,9 @@ const defaults = [
 		port: 5000,
 		dbconfig: {
 			user: "root",
-			host: "40.76.84.143",
+			host: "localhost",
 			database: "dbms_chat",
-			password: "",
+			password: "hrishikesh214",
 		},
 	},
 ]

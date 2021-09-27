@@ -9,7 +9,7 @@ router.get("/:user_id", async (req, res) => {
 	let user_id = req.params.user_id
 	try {
 		let chats = db.query(
-			`select id, last_msg, last_msg_time, un1, un2, p1, get_username(p1) as p1_username, p2, get_username(p2) as p2_username from chats where p1 = ${user_id} or p2 = ${user_id} order by last_msg_time desc`,
+			`select id, last_msg, last_msg_time, un1, un2, p1, get_username(p1) as p1_username, p2, get_username(p2) as p2_username, get_chat_reciever_status(id, ${user_id}) as user_status from chats where p1 = ${user_id} or p2 = ${user_id} order by last_msg_time desc`,
 			(err, result) => {
 				if (err) {
 					r.setError(err)
@@ -31,6 +31,7 @@ router.get("/:user_id", async (req, res) => {
 										? "p2"
 										: "p1"
 								],
+							status: chat["user_status"],
 							username:
 								chat[
 									parseInt(chat["p1"]) == user_id

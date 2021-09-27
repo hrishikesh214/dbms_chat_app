@@ -26,6 +26,28 @@ router.post("/login", async (req, res) => {
 	}
 })
 
+router.get("/logout/:user_id", async (req, res) => {
+	const { user_id } = req.params
+	let r = new Result()
+	try {
+		let logout = db.query(
+			`call make_offline(${user_id})`,
+			(err, result) => {
+				if (err) {
+					console.error(err)
+					r.setError(err)
+				} else {
+					r.setResult(true)
+				}
+				res.send(r.get())
+			}
+		)
+	} catch (err) {
+		r.setError(err)
+		res.send(r.get())
+	}
+})
+
 router.post("/signup", async (req, res) => {
 	const { username, password } = req.body
 	let r = new Result()
@@ -65,6 +87,7 @@ router.get("/search/:st", async (req, res) => {
 			}
 		)
 	} catch (err) {
+		console.error(err)
 		r.setError(err)
 		res.send(r.get())
 	}
