@@ -13,5 +13,4 @@ const Home = ({ user_id }) => {
 		</div>
 	)
 }
-
 export default Home

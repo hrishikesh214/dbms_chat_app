@@ -52,7 +52,7 @@ const Login = ({ onLogin }) => {
 	return (
 		<>
 			<div className="login-container">
-				<div className="header">Login</div>
+				<div className="header">Welcome to Chat App</div>
 				<div className="login-form">
 					<table>
 						<tr>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, Link } from "react-router-dom"
 import { defaults, api } from "../../config"
 import axios from "axios"
 import "./style.css"
@@ -100,6 +100,9 @@ const Chat = ({ user_id }) => {
 			) : (
 				<div className="main-content">
 					<div className="main-content-header">
+						<div className="back-btn">
+							<Link to="/">Back</Link>
+						</div>
 						<div>{receiver}</div>
 					</div>
 					<div className="main-content-body">

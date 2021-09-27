@@ -11,27 +11,37 @@ router.get("/:user_id", async (req, res) => {
 		let chats = db.query(
 			`select id, last_msg, last_msg_time, un1, un2, p1, get_username(p1) as p1_username, p2, get_username(p2) as p2_username from chats where p1 = ${user_id} or p2 = ${user_id} order by last_msg_time desc`,
 			(err, result) => {
-				result = result.map((chat) => {
-					let nc = {
-						id: chat.id,
-						last_msg: chat.last_msg,
-						last_msg_time: chat.last_msg_time,
-						unread_count:
-							chat[
-								parseInt(chat["p1"]) == user_id ? "un1" : "un2"
-							],
-						user_id:
-							chat[parseInt(chat["p1"]) == user_id ? "p2" : "p1"],
-						username:
-							chat[
-								parseInt(chat["p1"]) == user_id
-									? "p2_username"
-									: "p1_username"
-							],
-					}
-					return nc
-				})
-				r.setResult(result)
+				if (err) {
+					r.setError(err)
+				} else {
+					result = result.map((chat) => {
+						let nc = {
+							id: chat.id,
+							last_msg: chat.last_msg,
+							last_msg_time: chat.last_msg_time,
+							unread_count:
+								chat[
+									parseInt(chat["p1"]) == user_id
+										? "un1"
+										: "un2"
+								],
+							user_id:
+								chat[
+									parseInt(chat["p1"]) == user_id
+										? "p2"
+										: "p1"
+								],
+							username:
+								chat[
+									parseInt(chat["p1"]) == user_id
+										? "p2_username"
+										: "p1_username"
+								],
+						}
+						return nc
+					})
+					r.setResult(result)
+				}
 				res.send(r.get())
 			}
 		)

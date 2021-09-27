@@ -11,10 +11,14 @@ const defaults = [
 
 const links = [
 	{
-		home: `http://localhost:${defaults[0].port}/`,
+		home: `http://localhost${
+			defaults[0].port == 80 ? "" : ":" + defaults[0].port
+		}/`,
 	},
 	{
-		home: `http://40.76.84.143:${defaults[1].port}/`,
+		home: `http://40.76.84.143${
+			defaults[1].port == 80 ? "" : ":" + defaults[1].port
+		}/`,
 	},
 ]
 

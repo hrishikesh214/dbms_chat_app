@@ -56,3 +56,9 @@
 	padding: 7px;
 	border-radius: 7px;
 }
+@media (max-width: 768px) {
+	.search-container {
+		width: 99vw;
+		border-radius: 0;
+	}
+}

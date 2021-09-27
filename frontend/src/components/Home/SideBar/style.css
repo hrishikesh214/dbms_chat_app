@@ -49,3 +49,14 @@
 	cursor: pointer;
 	text-decoration: solid underline;
 }
+@media (max-width: 768px) {
+	.side-bar {
+		width: 100%;
+		height: auto;
+		border-top-left-radius: 0px;
+		border-bottom-left-radius: 0px;
+	}
+	.side-bar-header {
+		border-top-left-radius: 0px;
+	}
+}
