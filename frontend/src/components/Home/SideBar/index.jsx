@@ -90,7 +90,10 @@ const SideBar = ({ user_id }) => {
 				</div>
 				{chats.map((chat, index) => (
 					<div key={index} className="list-chat">
-						<div onClick={(e) => open_chat(chat.id)}>
+						<div
+							className={chat.status > 0 ? "is-online" : ""}
+							onClick={(e) => open_chat(chat.id)}
+						>
 							{chat.username}
 						</div>
 						{chat.unread_count > 0 && (

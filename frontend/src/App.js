@@ -4,12 +4,13 @@ import {
 	Switch,
 	Redirect,
 } from "react-router-dom"
-import { defaults, links } from "./components/config"
+import { defaults, links, api } from "./components/config"
 import Home from "./components/Home"
 import Login from "./components/Login"
 import Loader from "./components/Loader"
 import { useState, useEffect } from "react"
 import "./universal.css"
+import axios from "axios"
 
 const App = () => {
 	const [user_id, setUser_id] = useState(null)
@@ -64,8 +65,27 @@ const App = () => {
 }
 
 const Logout = () => {
-	localStorage.removeItem("_c_user")
-	window.location.href = "/"
+	const worker = async () => {
+		try {
+			let user_id = JSON.parse(localStorage.getItem("_c_user"))?.id
+			localStorage.removeItem("_c_user")
+			if (user_id !== undefined) {
+				let lout = await axios.get(
+					`${api.base}${api.user}/logout/${user_id}`
+				)
+			}
+
+			setTimeout(() => {
+				window.location.href = "/"
+			}, 2000)
+		} catch (err) {
+			console.log(err)
+		}
+	}
+	useEffect(() => {
+		worker()
+	}, [])
+
 	return <Loader />
 }
 

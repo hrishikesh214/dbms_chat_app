@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { defaults, api } from "../../config"
+import useSound from "use-sound"
+import notify_tone from "./n_tone2.wav"
 import axios from "axios"
 import "./style.css"
 
@@ -9,6 +11,14 @@ const Chat = ({ user_id }) => {
 	const [receiver, setReceiver] = useState("")
 	const { cid } = useParams()
 	const [to_load, set_to_load] = useState(cid !== undefined)
+	const [waitState, setWaitState] = useState(false)
+	// const [playNotify] = useSound(notify_tone)
+	const nt = new Audio(notify_tone)
+
+	const playNotify = () => {
+		nt.volume = 0.2
+		nt.play()
+	}
 
 	const bottomRef = useRef(null)
 
@@ -25,6 +35,7 @@ const Chat = ({ user_id }) => {
 
 	const worker = async () => {
 		if (cid === null) return
+
 		try {
 			let r = await axios({
 				method: "get",
@@ -32,7 +43,11 @@ const Chat = ({ user_id }) => {
 			})
 			if (r.status !== 200) throw defaults.network_error
 			if (!r.data.ok) throw r.data.error
-			if (r.data.result.refresh) await load_messages()
+
+			if (r.data.result.refresh) {
+				setTimeout(playNotify, 500)
+				await load_messages()
+			}
 		} catch (err) {
 			console.log(err)
 		}
@@ -67,7 +82,11 @@ const Chat = ({ user_id }) => {
 	}
 
 	const send_msg = async () => {
+		if (waitState) return
 		let msg = document.getElementById("msg")
+		if (msg.value == "") return
+		setWaitState(true)
+
 		// add to present
 		setMessages([
 			...messages,
@@ -86,9 +105,15 @@ const Chat = ({ user_id }) => {
 		} catch (err) {
 			console.log(err)
 		}
+		setWaitState(false)
 		setTimeout(scroll_bottom, 200)
 		msg.value = ""
 	}
+
+	const check_send = async (e) => {
+		if (e.key === "Enter") send_msg()
+	}
+
 	return (
 		<>
 			{cid === undefined ? (
@@ -138,6 +163,7 @@ const Chat = ({ user_id }) => {
 								type="text"
 								placeholder="type here"
 								className="input-field"
+								onKeyPress={(e) => check_send(e)}
 							/>
 							<button
 								onClick={(e) => send_msg()}
