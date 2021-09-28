@@ -1,11 +1,15 @@
 import "./style.css"
 import axios from "axios"
 import { defaults, api } from "../../config"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 
 const SearchBar = ({ user_id, close_search }) => {
 	const [users, setUsers] = useState([])
 
+	/**
+	 * makes api call to search LIKE st
+	 * @param {string} st
+	 */
 	const make_search = async (st) => {
 		try {
 			let r = await axios({
@@ -20,6 +24,9 @@ const SearchBar = ({ user_id, close_search }) => {
 		}
 	}
 
+	/**
+	 * makes api call to open chat for user
+	 */
 	const create_chat = async (rid) => {
 		try {
 			let r = await axios({

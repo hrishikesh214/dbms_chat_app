@@ -1,4 +1,8 @@
-let selector = 1
+/**
+ ** Config file contains all required data for the application
+ */
+
+let selector = 1 // selector will select single profile from multiple profile
 
 const defaults = [
 	{
@@ -9,6 +13,7 @@ const defaults = [
 	},
 ]
 
+// links will have all links related to present frontend path
 const links = [
 	{
 		home: `http://localhost${
@@ -22,6 +27,7 @@ const links = [
 	},
 ]
 
+// api will contain all api related to present path
 const api = [
 	{
 		base: "http://localhost:5000/",
@@ -35,6 +41,7 @@ const api = [
 	},
 ]
 
+// finnally select profile according to selector
 const _links = links[selector]
 const _defaults = {
 	...defaults[selector],

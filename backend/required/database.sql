@@ -57,11 +57,19 @@ begin
     select get_chat_reciever_id(c_id, new.sender_id) into rec_id;
     select p1, p2 into p1_id, p2_id from chats where id = c_id;
     if rec_id = p1_id then
-        update chats set last_msg = new.msg, last_msg_time = new.sent_at, un1 = un1 + 1 where id = new.chat_id;
+        update chats set 
+            last_msg = new.msg, 
+            last_msg_time = new.sent_at, 
+            un1 = un1 + 1 
+            where id = new.chat_id;
     else
-    update chats set last_msg = new.msg, last_msg_time = new.sent_at, un2 = un2 + 1 where id = new.chat_id;
+    update chats set 
+        last_msg = new.msg, 
+        last_msg_time = new.sent_at, 
+        un2 = un2 + 1 
+        where id = new.chat_id;
     end if;
-    update people set to_refresh = 1 where id = p1_id or id = p2_id;
+    update people set to_refresh = 1 where id = rec_id;
 end//
 delimiter ;
 
@@ -277,12 +285,13 @@ create function make_chat(pid1 int, pid2 int)
 returns int
 begin
     declare cid int default 0;
-    select count(*) into cid from chats where p1 = pid1 and p2 = pid2;
+    declare tid int default 0;
+    select  count(*) into  cid from chats where (p1 = pid1 and p2 = pid2) or (p1 = pid2 and p2 = pid1);
     if cid = 0 then
         insert into chats(p1, p2) values(pid1, pid2);
         select LAST_INSERT_ID() into cid;
     else
-        select id into cid from chats where p1 = pid1 and p2 = pid2;
+        select id into cid from chats where (p1 = pid1 and p2 = pid2) or (p1 = pid2 and p2 = pid1);
     end if;
     update people set to_refresh = 1 where id = pid1 or id = pid2;
     return cid;

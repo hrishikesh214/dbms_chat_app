@@ -3,17 +3,20 @@ import { useParams, Link } from "react-router-dom"
 import { defaults, api } from "../../config"
 import notify_tone from "./n_tone2.wav"
 import axios from "axios"
-import ago from "s-ago"
+import ago from "s-ago" // for converting datetime to hum readable time
 import "./style.css"
 
-const Chat = ({ user_id }) => {
+const Chat = ({ user_id, uname }) => {
 	const [messages, setMessages] = useState([])
-	const [receiver, setReceiver] = useState("")
+	const [receiver, setReceiver] = useState(uname)
 	const { cid } = useParams()
 	const [to_load, set_to_load] = useState(cid !== undefined)
 	const [waitState, setWaitState] = useState(false)
 	const nt = new Audio(notify_tone)
 
+	/**
+	 * plays the notification tone
+	 */
 	const playNotify = () => {
 		nt.volume = 0.2
 		nt.play()
@@ -21,6 +24,9 @@ const Chat = ({ user_id }) => {
 
 	const bottomRef = useRef(null)
 
+	/**
+	 * scrolls to the bottom of the chat
+	 */
 	const scroll_bottom = () => {
 		if (bottomRef.current) {
 			bottomRef.current.scrollIntoView({ behavior: "smooth" })
@@ -30,39 +36,52 @@ const Chat = ({ user_id }) => {
 	useEffect(() => {
 		load_messages()
 		setInterval(worker, 2000)
-	}, [])
+	}, [uname])
 
+	/**
+	 * constantly checks for new messages
+	 * as we cnt use websockets, we have to do this
+	 */
 	const worker = async () => {
 		if (cid === null) return
 
 		try {
 			let r = await axios({
 				method: "get",
-				url: api.base + api.chats + `/${cid}/${user_id}/refreshcheck`,
+				url:
+					api.base +
+					api.chats +
+					`/${cid ?? 0}/${user_id}/refreshcheck`,
 			})
 			if (r.status !== 200) throw defaults.network_error
 			if (!r.data.ok) throw r.data.error
 
 			if (r.data.result.refresh) {
-				setTimeout(playNotify, 500)
+				// setTimeout(playNotify, 500)
 				await load_messages()
 			}
 		} catch (err) {
-			console.log(err)
+			// console.log(err)
 		}
 	}
 
+	/**
+	 * loads the messages from the server
+	 */
 	const load_messages = async () => {
 		if (cid === null) return
 		// fetch from api
 		try {
 			let r = await axios({
 				method: "get",
-				url: api.base + api.chats + `/${cid}/messages/${user_id}`,
+				url: api.base + api.chats + `/${cid ?? 0}/messages/${user_id}`,
 			})
 			if (r.status !== 200) throw defaults.network_error
 			if (!r.data.ok) throw r.data.error
-			console.log(r.data)
+			console.log(r.data.result)
+			if (r.data.result === null) {
+				// window.location.href = `/`
+			}
 			setMessages(r.data.result)
 			let done = r.data.result.length - 1
 			while (done >= 0) {
@@ -80,6 +99,9 @@ const Chat = ({ user_id }) => {
 		}
 	}
 
+	/**
+	 * sends a message to the server and also adds it to local store
+	 */
 	const send_msg = async () => {
 		if (waitState) return
 		let msg = document.getElementById("msg")
@@ -109,6 +131,9 @@ const Chat = ({ user_id }) => {
 		msg.value = ""
 	}
 
+	/**
+	 * trigger send_message on enter key
+	 */
 	const check_send = async (e) => {
 		if (e.key === "Enter") send_msg()
 	}

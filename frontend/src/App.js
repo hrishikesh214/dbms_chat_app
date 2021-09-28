@@ -4,7 +4,7 @@ import {
 	Switch,
 	Redirect,
 } from "react-router-dom"
-import { defaults, links, api } from "./components/config"
+import { links, api } from "./components/config"
 import Home from "./components/Home"
 import Login from "./components/Login"
 import Loader from "./components/Loader"
@@ -16,6 +16,7 @@ const App = () => {
 	const [user_id, setUser_id] = useState(null)
 	const [user_name, setUser_name] = useState(null)
 	const [toLoad, setToLoad] = useState(true)
+
 	useEffect(() => {
 		const user = JSON.parse(localStorage.getItem("_c_user"))
 		if (user) {
@@ -27,8 +28,10 @@ const App = () => {
 		setToLoad(false)
 	}, [])
 
+	/**
+	 * this hook will be passed on to Login component to make user see chat ..Lol
+	 */
 	const make_login = ({ id, username }) => {
-		console.log("login", id, username)
 		setUser_id(id)
 		setUser_name(username)
 		localStorage.setItem("_c_user", JSON.stringify({ id, username }))
@@ -64,6 +67,7 @@ const App = () => {
 	)
 }
 
+// simple logout component will request api for logging out the session
 const Logout = () => {
 	const worker = async () => {
 		try {

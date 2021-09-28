@@ -1,3 +1,10 @@
+/**
+ * using
+ * 	- express => for api routing
+ *  - cors => for removing cors issues
+ *  - chalk => for beutiful console
+ */
+
 import express, { json } from "express" // express js
 import chalk from "chalk" // chalk for better output
 import { defaults } from "./required/configs.js" // custom settings
@@ -23,10 +30,13 @@ app.use("/user", user) // user routes
 
 app.get("/", async (req, res) => {
 	let r = new Result()
-	let s = db.query(`show tables`, (err, result, fields) => {
-		r.setResult(result)
-		res.send(r)
-	})
+	let s = db.query(
+		`select table_name as 'Tables'  from  information_schema.tables where table_schema = ${defaults.dbconfig.database}`,
+		(err, result, fields) => {
+			r.setResult(result)
+			res.send(r)
+		}
+	)
 })
 
 /**

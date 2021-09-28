@@ -4,6 +4,9 @@ import db from "./required/db.js"
 
 const router = Router()
 
+/**
+ * @api {get} /chats/:id Get chat
+ */
 router.get("/:user_id", async (req, res) => {
 	let r = new Result()
 	let user_id = req.params.user_id
@@ -52,6 +55,9 @@ router.get("/:user_id", async (req, res) => {
 	}
 })
 
+/**
+ * @api {post} /chat/p1/p2 create new chat
+ */
 router.post("/:p1/:p2", async (req, res) => {
 	let r = new Result()
 	let { p1, p2 } = req.params
@@ -73,6 +79,9 @@ router.post("/:p1/:p2", async (req, res) => {
 	}
 })
 
+/**
+ * @api {get} checks if there is need to update chatlist
+ */
 router.get("/:user_id/chatlistcheck", async (req, res) => {
 	let r = new Result()
 	let { user_id } = req.params
@@ -80,7 +89,11 @@ router.get("/:user_id/chatlistcheck", async (req, res) => {
 		let rstat = db.query(
 			`select chatlist_refresh(${user_id}) as refresh`,
 			(err, result) => {
-				r.setResult(result[0])
+				if (err) {
+					r.setError(err)
+				} else {
+					r.setResult(result[0])
+				}
 				res.send(r.get())
 			}
 		)
@@ -90,6 +103,9 @@ router.get("/:user_id/chatlistcheck", async (req, res) => {
 	}
 })
 
+/**
+ * @api {get} checks if there is need to update messages for new messages
+ */
 router.get("/:chat_id/:user_id/refreshcheck", async (req, res) => {
 	let r = new Result()
 	let { user_id, chat_id } = req.params
@@ -113,39 +129,52 @@ router.get("/:chat_id/:user_id/refreshcheck", async (req, res) => {
 	}
 })
 
+/**
+ * @api {get} get chat messages
+ * returns null if user has no permission to see chat
+ */
 router.get("/:chat_id/messages/:user_id", async (req, res) => {
 	let r = new Result()
-	let chat_id = req.params.chat_id
-	try {
-		let chats = db.query(
-			`select id, msg, sent_at, sender_id, get_username(sender_id) as sender_username from messages where chat_id = ${chat_id}`,
-			(err, result) => {
-				if (err) {
-					r.setError(err)
-					res.send(r.get())
-					return
-				} else {
-					result = result.map((message) => {
-						let nm = {
-							id: message.id,
-							message: message.msg,
-							time: message.sent_at,
-							user_id: message.sender_id,
-							username: message.sender_username,
-						}
-						return nm
-					})
-					r.setResult(result)
-					res.send(r.get())
-				}
-			}
-		)
-	} catch (err) {
-		r.setError(err)
+	let { chat_id, user_id } = req.params
+
+	if (user_id == undefined || chat_id == 0) {
+		r.setResult(null)
 		res.send(r.get())
-	}
+	} else
+		try {
+			let chats = db.query(
+				`select messages.id, messages.msg, messages.sent_at, messages.sender_id, get_username(messages.sender_id) as sender_username from messages inner join chats on chats.id = messages.chat_id where chat_id = ${chat_id} and (chats.p1 = ${user_id} or chats.p2 = ${user_id}) order by messages.sent_at desc limit 70 `,
+				(err, result) => {
+					if (err) {
+						console.log(err)
+						r.setError(err)
+						res.send(r.get())
+						return
+					} else {
+						result = result.reverse().map((message) => {
+							let nm = {
+								id: message.id,
+								message: message.msg,
+								time: message.sent_at,
+								user_id: message.sender_id,
+								username: message.sender_username,
+							}
+							return nm
+						})
+						r.setResult(result)
+						res.send(r.get())
+					}
+				}
+			)
+		} catch (err) {
+			r.setError(err)
+			res.send(r.get())
+		}
 })
 
+/**
+ * @api {post} sends message to a chat by a user
+ */
 router.post("/:chat_id/messages/:user_id", async (req, res) => {
 	let r = new Result()
 	let { user_id, chat_id } = req.params

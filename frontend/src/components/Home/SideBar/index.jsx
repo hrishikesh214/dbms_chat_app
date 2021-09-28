@@ -6,7 +6,7 @@ import SearchBar from "../SearchBar"
 import notify_tone from "../Chat/n_tone2.wav"
 import ago from "s-ago"
 
-const SideBar = ({ user_id }) => {
+const SideBar = ({ user_id, refresher, onOpenChat }) => {
 	const [username, setUsername] = useState("")
 	const [chats, setChats] = useState([])
 	const [_refresh, setRefresh] = useState(0)
@@ -14,11 +14,17 @@ const SideBar = ({ user_id }) => {
 
 	const nt = new Audio(notify_tone)
 
+	/**
+	 * play notification sound
+	 */
 	const playNotify = () => {
 		nt.volume = 0.2
 		nt.play()
 	}
 
+	/**
+	 * dummy refresher for shit reactjs!
+	 */
 	const refresh = () => {
 		setRefresh(_refresh + 1)
 	}
@@ -27,8 +33,11 @@ const SideBar = ({ user_id }) => {
 		setup()
 		fetch_chats()
 		setInterval(worker, 2000)
-	}, [])
+	}, [refresher])
 
+	/**
+	 * Load username from cache
+	 */
 	const setup = () => {
 		const user = JSON.parse(
 			localStorage.getItem("_c_user") ?? `{username:"NULL"}`
@@ -38,6 +47,10 @@ const SideBar = ({ user_id }) => {
 		}
 	}
 
+	/**
+	 * constantly check api for new chats
+	 * because we can't use websockets or we dont have time
+	 */
 	const worker = async () => {
 		try {
 			let r = await axios({
@@ -51,10 +64,13 @@ const SideBar = ({ user_id }) => {
 				await fetch_chats()
 			}
 		} catch (err) {
-			console.log(err)
+			// console.log(err)
 		}
 	}
 
+	/**
+	 * fetch chats from api
+	 */
 	const fetch_chats = async () => {
 		try {
 			let r = await axios({
@@ -69,6 +85,9 @@ const SideBar = ({ user_id }) => {
 		}
 	}
 
+	/**
+	 * does set the application for a chat
+	 */
 	const open_chat = (id) => {
 		let nc = chats.filter((c) => c.id === id)[0]
 		setChats([
@@ -76,8 +95,13 @@ const SideBar = ({ user_id }) => {
 			{ ...nc, unread_count: 0 },
 		])
 		setTimeout(refresh, 2000)
+		onOpenChat(nc.username)
 		window.location.href = `/chat/${id}`
 	}
+
+	/**
+	 * redirects to logout
+	 */
 	const make_logout = () => {
 		window.location.href = `/logout`
 	}
@@ -117,7 +141,7 @@ const SideBar = ({ user_id }) => {
 						</div>
 						<div className="list-chat-footer">
 							<span className="msg">
-								{chat.last_msg.substring(0, 25) + "..."}
+								{chat.last_msg?.substring(0, 25) + "..."}
 							</span>
 							<span className="time">
 								<marquee scrollamount="2" scrolldelay="10">

@@ -4,6 +4,10 @@ import db from "./required/db.js"
 
 const router = Router()
 
+/**
+ * @api {post} login
+ * @return id if exists, else 0
+ */
 router.post("/login", async (req, res) => {
 	const { username, password } = req.body
 	let r = new Result()
@@ -26,6 +30,10 @@ router.post("/login", async (req, res) => {
 	}
 })
 
+/**
+ * @api {get} logout
+ * @return {bool} success message
+ */
 router.get("/logout/:user_id", async (req, res) => {
 	const { user_id } = req.params
 	let r = new Result()
@@ -48,6 +56,10 @@ router.get("/logout/:user_id", async (req, res) => {
 	}
 })
 
+/**
+ * @api {post} signups
+ * @return id if exists, else create a new and return
+ */
 router.post("/signup", async (req, res) => {
 	const { username, password } = req.body
 	let r = new Result()
@@ -70,6 +82,10 @@ router.post("/signup", async (req, res) => {
 	}
 })
 
+/**
+ * @api {get} searches LIKE st
+ * @return list of searches
+ */
 router.get("/search/:st", async (req, res) => {
 	const { st } = req.params
 	let r = new Result()
