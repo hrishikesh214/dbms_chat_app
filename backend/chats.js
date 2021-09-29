@@ -143,7 +143,7 @@ router.get("/:chat_id/messages/:user_id", async (req, res) => {
 	} else
 		try {
 			let chats = db.query(
-				`select messages.id, messages.msg, messages.sent_at, messages.sender_id, get_username(messages.sender_id) as sender_username from messages inner join chats on chats.id = messages.chat_id where chat_id = ${chat_id} and (chats.p1 = ${user_id} or chats.p2 = ${user_id}) order by messages.sent_at desc limit 70 `,
+				`select messages.id, messages.msg, messages.sent_at, messages.sender_id, check_starred(messages.id,${user_id}) as 'starred',get_username(messages.sender_id) as sender_username from messages inner join chats on chats.id = messages.chat_id where chat_id = ${chat_id} and (chats.p1 = ${user_id} or chats.p2 = ${user_id}) order by messages.sent_at desc limit 70 `,
 				(err, result) => {
 					if (err) {
 						console.log(err)
@@ -158,6 +158,7 @@ router.get("/:chat_id/messages/:user_id", async (req, res) => {
 								time: message.sent_at,
 								user_id: message.sender_id,
 								username: message.sender_username,
+								starred: message.starred,
 							}
 							return nm
 						})
@@ -181,7 +182,79 @@ router.post("/:chat_id/messages/:user_id", async (req, res) => {
 	let { msg } = req.body
 	try {
 		let chats = db.query(
-			`call send_message(${chat_id}, ${user_id}, '${msg}')`,
+			`select send_message(${chat_id}, ${user_id}, '${msg}') as 'msg_id'`,
+			(err, result) => {
+				if (err) {
+					console.log(err)
+					r.setError(err)
+					res.send(r.get())
+				} else {
+					console.log(result[0].msg_id)
+					r.setResult(result)
+					res.send(r.get())
+				}
+			}
+		)
+	} catch (err) {
+		r.setError(err)
+		res.send(r.get())
+	}
+})
+
+router.delete("/:chat_id/messages/:msg_id", async (req, res) => {
+	let r = new Result()
+	let { msg_id, chat_id } = req.params
+	try {
+		let chats = db.query(
+			`call delete_message(${msg_id})`,
+			(err, result) => {
+				if (err) {
+					console.log(err)
+					r.setError(err)
+					res.send(r.get())
+				} else {
+					r.setResult(result)
+					res.send(r.get())
+				}
+			}
+		)
+	} catch (err) {
+		r.setError(err)
+		res.send(r.get())
+	}
+})
+
+router.patch("/:chat_id/messages/star", async (req, res) => {
+	let r = new Result()
+	let { chat_id } = req.params
+	let { msg_id, user_id } = req.body
+	try {
+		let chats = db.query(
+			`call star_message(${msg_id}, ${user_id})`,
+			(err, result) => {
+				if (err) {
+					console.log(err)
+					r.setError(err)
+					res.send(r.get())
+				} else {
+					r.setResult(result)
+					res.send(r.get())
+				}
+			}
+		)
+	} catch (err) {
+		r.setError(err)
+		res.send(r.get())
+	}
+})
+
+router.patch("/:chat_id/messages/unstar", async (req, res) => {
+	let r = new Result()
+	let { chat_id } = req.params
+	let { msg_id, user_id } = req.body
+	try {
+		let chats = db.query(
+			`call unstar_message(${msg_id}, ${user_id})`,
 			(err, result) => {
 				if (err) {
 					console.log(err)

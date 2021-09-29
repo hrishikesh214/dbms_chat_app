@@ -109,4 +109,44 @@ router.get("/search/:st", async (req, res) => {
 	}
 })
 
+router.get("/:user_id/starred_messages", async (req, res) => {
+	let r = new Result()
+	let { user_id } = req.params
+
+	if (user_id == undefined) {
+		r.setResult(null)
+		res.send(r.get())
+	} else
+		try {
+			let chats = db.query(
+				`select messages.id, messages.msg, messages.sender_id, messages.sent_at, people.username as 'sender_username' from starred_messages inner join messages inner join people on people.id = messages.sender_id on messages.id = starred_messages.msg_id where people.id = ${user_id}`,
+				(err, result) => {
+					if (err) {
+						console.log(err)
+						r.setError(err)
+						res.send(r.get())
+						return
+					} else {
+						result = result.reverse().map((message) => {
+							let nm = {
+								id: message.id,
+								message: message.msg,
+								time: message.sent_at,
+								user_id: message.sender_id,
+								username: message.sender_username,
+								starred: 1,
+							}
+							return nm
+						})
+						r.setResult(result)
+						res.send(r.get())
+					}
+				}
+			)
+		} catch (err) {
+			r.setError(err)
+			res.send(r.get())
+		}
+})
+
 export default router

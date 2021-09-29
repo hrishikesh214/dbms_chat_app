@@ -37,6 +37,20 @@ create table if not exists messages(
     foreign key (sender_id) references people(id)
 );
 
+create table if not exists starred_messages(
+    msg_id int primary key,
+    user_id int not null,
+    foreign key (user_id) references people(id)
+);
+
+create table if not exists deleted_messages(
+    msg_id int primary key,
+    chat_id int not null,
+    content text not null,
+    sent_by int not null,
+    deleted_at timestamp not null default current_timestamp
+);
+
 -- dummy insert
 insert into people(username, password) values("hrishi", "hrishi"), ("admin", "admin");
 insert into chats(p1, p2) values(1, 2);
@@ -86,6 +100,23 @@ create trigger on_chat after insert on chats
     end//
 delimiter ;
 
+-- on message delete log it
+drop trigger if exists on_message_delete;
+delimiter //
+create trigger on_message_delete after delete on messages
+    for each row
+    begin
+    declare nc text default "";
+    declare nt timestamp default current_timestamp;
+    declare p2_id int default 0;
+    insert into deleted_messages(msg_id, chat_id, content, sent_by) values(old.id, old.chat_id, old.msg, old.sender_id);
+    select msg, sent_at into nc, nt from messages where chat_id = old.chat_id order by sent_at desc limit 1;
+    update chats set last_msg = nc, last_msg_time = nt where id = old.chat_id;
+    select get_chat_reciever_id(old.chat_id, old.sender_id) into p2_id;
+    update people set to_refresh = 1 where id = old.sender_id or id = p2_id;
+    end//
+delimiter ;
+
 -- procedures
 
 -- make a person online
@@ -126,12 +157,31 @@ begin
 end//
 delimiter ;
 
--- send messages to a chat
-drop procedure if exists send_message;
+-- delete message
+drop procedure if exists delete_message;
 delimiter //
-create procedure send_message(cid int, sender_id int, msg text)
+create procedure delete_message(mid int)
 begin
-    insert into messages(chat_id, sender_id, msg) values(cid, sender_id, msg);
+    delete from messages where id = mid;
+    delete from starred_messages where msg_id = mid;
+end//
+delimiter ;
+
+-- starrs messages for a person
+drop procedure if exists star_message;
+delimiter //
+create procedure star_message(mid int, uid int)
+begin
+    insert into starred_messages(msg_id, user_id) values(mid, uid);
+end//
+delimiter ;
+
+-- unstar messages for a person
+drop procedure if exists unstar_message;
+delimiter //
+create procedure unstar_message(mid int, uid int)
+begin
+    delete from starred_messages where msg_id = mid and user_id = uid;
 end//
 delimiter ;
 
@@ -295,5 +345,30 @@ begin
     end if;
     update people set to_refresh = 1 where id = pid1 or id = pid2;
     return cid;
+end//
+delimiter ;
+
+-- send messages to a chat
+drop function if exists send_message;
+delimiter //
+create function send_message(cid int, sender_id int, msg text)
+returns int
+begin
+    declare mid int default 0;
+    insert into messages(chat_id, sender_id, msg) values(cid, sender_id, msg);
+    select LAST_INSERT_ID() into mid;
+    return mid;
+end//
+delimiter ;
+
+-- check if a message is starred for a person
+drop function if exists check_starred;
+delimiter //
+create function check_starred(mid int, pid int)
+returns int
+begin
+    declare r int default 0;
+    select count(*) into r from starred_messages where msg_id = mid and user_id = pid;
+    return r;
 end//
 delimiter ;

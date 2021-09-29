@@ -70,13 +70,21 @@
 	align-items: center;
 	font-size: 10px;
 }
+.btn-section {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
+}
 .panel-btn {
-	background-color: var(--secondary);
-	color: black;
-	font-weight: bold;
-	padding: 10px 20px;
 	cursor: pointer;
-	text-decoration: solid underline;
+	flex: 50%;
+	border: 1px solid var(--primary);
+	font-size: 1rem;
+	font-weight: bold;
+	background-color: var(--secondary);
+	width: 50%;
+	padding: 10px 0;
 }
 .is-online::after {
 	content: "";

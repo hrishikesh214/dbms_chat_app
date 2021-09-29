@@ -2,7 +2,7 @@
  ** Config file contains all required data for the application
  */
 
-let selector = 1 // selector will select single profile from multiple profile
+let selector = 0 // selector will select single profile from multiple profile
 
 const defaults = [
 	{

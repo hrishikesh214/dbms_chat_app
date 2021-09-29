@@ -5,12 +5,14 @@ import axios from "axios"
 import SearchBar from "../SearchBar"
 import notify_tone from "../Chat/n_tone2.wav"
 import ago from "s-ago"
+import StarredMessages from "./StarredMessages"
 
 const SideBar = ({ user_id, refresher, onOpenChat }) => {
 	const [username, setUsername] = useState("")
 	const [chats, setChats] = useState([])
 	const [_refresh, setRefresh] = useState(0)
 	const [sdb, setSdb] = useState(false)
+	const [ssm, setSsm] = useState(false)
 
 	const nt = new Audio(notify_tone)
 
@@ -114,16 +116,31 @@ const SideBar = ({ user_id, refresher, onOpenChat }) => {
 					close_search={() => setSdb(false)}
 				/>
 			)}
+			{ssm && (
+				<StarredMessages
+					user_id={user_id}
+					close_sm={() => setSsm(false)}
+				/>
+			)}
 			<div className="side-bar">
 				<div className="side-bar-header">
 					<span>{username}</span>
 				</div>
-				<div className="panel-btn" onClick={(e) => make_logout()}>
-					Logout
+				<div className="btn-section">
+					<button
+						className="panel-btn"
+						onClick={(e) => make_logout()}
+					>
+						Logout
+					</button>
+					<button className="panel-btn" onClick={() => setSdb(true)}>
+						New Chat
+					</button>
+					<button className="panel-btn" onClick={() => setSsm(true)}>
+						Starred Messages
+					</button>
 				</div>
-				<div className="panel-btn" onClick={() => setSdb(true)}>
-					New Chat
-				</div>
+
 				{chats.map((chat, index) => (
 					<div key={index} className="list-chat">
 						<div className="list-chat-ele">

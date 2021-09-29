@@ -5,6 +5,7 @@ import notify_tone from "./n_tone2.wav"
 import axios from "axios"
 import ago from "s-ago" // for converting datetime to hum readable time
 import "./style.css"
+import Message from "./Message"
 
 const Chat = ({ user_id, uname }) => {
 	const [messages, setMessages] = useState([])
@@ -109,10 +110,6 @@ const Chat = ({ user_id, uname }) => {
 		setWaitState(true)
 
 		// add to present
-		setMessages([
-			...messages,
-			{ message: msg.value, user_id: user_id, time: Date.now() },
-		])
 
 		//send to api
 		try {
@@ -123,6 +120,16 @@ const Chat = ({ user_id, uname }) => {
 			})
 			if (r.status !== 200) throw defaults.network_error
 			if (!r.data.ok) throw r.data.error
+			console.log(r.data.result)
+			setMessages([
+				...messages,
+				{
+					id: r.data.result,
+					message: msg.value,
+					user_id: user_id,
+					time: Date.now(),
+				},
+			])
 		} catch (err) {
 			console.log(err)
 		}
@@ -136,6 +143,22 @@ const Chat = ({ user_id, uname }) => {
 	 */
 	const check_send = async (e) => {
 		if (e.key === "Enter") send_msg()
+	}
+
+	const on_delete = async (id) => {
+		// api call
+		try {
+			let r = await axios({
+				method: "delete",
+				url: api.base + api.chats + `/${cid}/messages/${id}`,
+			})
+			if (r.status !== 200) throw defaults.network_error
+			if (!r.data.ok) throw r.data.error
+		} catch (err) {
+			console.log(err)
+		}
+		// update local store
+		setMessages(messages.filter((m) => m.id !== id))
 	}
 
 	return (
@@ -164,23 +187,12 @@ const Chat = ({ user_id, uname }) => {
 						) : (
 							<div className="message-container">
 								{messages.map((message, index) => (
-									<div
-										key={index}
-										className={`message-wrapper ${
-											message.user_id === user_id
-												? "my-msg"
-												: "sender-msg"
-										}`}
-									>
-										<div className="message">
-											<div className="text">
-												{message.message}
-											</div>
-											<div className="time">
-												{ago(new Date(message.time))}
-											</div>
-										</div>
-									</div>
+									<Message
+										message={message}
+										user_id={user_id}
+										index={index}
+										on_delete={on_delete}
+									/>
 								))}
 								<div ref={bottomRef} />
 							</div>
