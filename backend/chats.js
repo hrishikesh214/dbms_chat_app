@@ -189,8 +189,7 @@ router.post("/:chat_id/messages/:user_id", async (req, res) => {
 					r.setError(err)
 					res.send(r.get())
 				} else {
-					console.log(result[0].msg_id)
-					r.setResult(result)
+					r.setResult(result[0].msg_id)
 					res.send(r.get())
 				}
 			}

@@ -35,17 +35,15 @@ const StarredMessages = ({ user_id, close_sm }) => {
 					<div className="ele close-btn">
 						<button onClick={(e) => close_sm()}>Close</button>
 					</div>
-					{starredMessages
-						.filter((u) => u.id !== user_id)
-						.map((message, index) => (
-							<Message
-								key={index}
-								message={message}
-								user_id={user_id}
-								showusername
-								nodelete
-							/>
-						))}
+					{starredMessages.map((message, index) => (
+						<Message
+							key={index}
+							message={message}
+							user_id={user_id}
+							showusername
+							nodelete
+						/>
+					))}
 					{starredMessages.length === 0 && (
 						<div className="ele">No Starred Messages</div>
 					)}
