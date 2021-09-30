@@ -24,7 +24,7 @@ const defaults = [
 			user: "root",
 			host: "localhost",
 			database: "dbms_chat",
-			password: "hrishikesh214",
+			password: "",
 		},
 	},
 ]

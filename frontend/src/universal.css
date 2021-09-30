@@ -4,15 +4,17 @@
 
 /* define rule */
 :root {
-	--background: #003e55;
-	--primary: #00b7ff;
-	--secondary: #00b7ff77;
+	--background: #332b3a;
+	--primary: #132666;
+	--secondary: #03a9f4;
 	--default-font: "Merriweather Sans", sans-serif;
-	--field: #2b444e;
+	--field: #6a95cc;
+	--black: #404040;
+	--white: #f5f5f5;
 }
 
 body {
-	background-color: #316477;
+	background-color: var(--field);
 	font-family: var(--default-font);
 	color: white;
 }

@@ -150,20 +150,22 @@ const SideBar = ({ user_id, refresher, onOpenChat }) => {
 							>
 								{chat.username}
 							</div>
-							{chat.unread_count > 0 && (
-								<div className="msg-count">
-									{chat.unread_count}
-								</div>
-							)}
+							<div className="desc">
+								{chat.unread_count > 0 && (
+									<div className="msg-count">
+										{chat.unread_count}
+									</div>
+								)}
+								<span className="time">
+									<marquee scrollamount="2" scrolldelay="10">
+										{ago(new Date(chat.last_msg_time))}
+									</marquee>
+								</span>
+							</div>
 						</div>
 						<div className="list-chat-footer">
 							<span className="msg">
-								{chat.last_msg?.substring(0, 25) + "..."}
-							</span>
-							<span className="time">
-								<marquee scrollamount="2" scrolldelay="10">
-									{ago(new Date(chat.last_msg_time))}
-								</marquee>
+								{chat.last_msg?.substring(0, 65) + "..."}
 							</span>
 						</div>
 					</div>

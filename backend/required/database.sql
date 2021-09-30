@@ -38,8 +38,9 @@ create table if not exists messages(
 );
 
 create table if not exists starred_messages(
-    msg_id int primary key,
+    msg_id int,
     user_id int not null,
+    foreign key (msg_id) references messages(id) on delete cascade,
     foreign key (user_id) references people(id)
 );
 

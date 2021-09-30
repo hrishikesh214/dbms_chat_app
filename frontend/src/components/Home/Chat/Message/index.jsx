@@ -52,15 +52,20 @@ const Message = ({ message, user_id, on_delete, showusername, nodelete }) => {
 					<div className="text">{message.message}</div>
 					<div className="time">{ago(new Date(message.time))}</div>
 					<div className="opts">
-						<span onClick={(e) => toggle_star()}>
+						<span className="star" onClick={(e) => toggle_star()}>
 							{isStarred ? <AiFillStar /> : <AiOutlineStar />}
 						</span>
 						{nodelete ? (
 							""
-						) : (
-							<span onClick={(e) => delete_message()}>
+						) : message.user_id === user_id ? (
+							<span
+								className="delete"
+								onClick={(e) => delete_message()}
+							>
 								<AiFillDelete />
 							</span>
+						) : (
+							""
 						)}
 					</div>
 				</div>

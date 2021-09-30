@@ -11,20 +11,25 @@
 }
 
 .message {
-	background: var(--secondary);
+	color: var(--black);
 	min-width: 120px;
 	max-width: 250px;
 	width: fit-content;
 	cursor: pointer;
 	padding: 10px;
 	margin: 5px 0;
-	border-radius: 7px;
-	box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+	border-radius: 20px;
+	box-shadow: 0px 0px 5px var(--black);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	position: relative;
 }
+.message > .text {
+	cursor: text;
+}
+
 .message > div {
 	width: 100%;
 }
@@ -49,4 +54,10 @@
 	font-weight: bold;
 	text-decoration: underline;
 	margin-bottom: 10px;
+}
+.star {
+	color: rgb(207, 186, 0);
+}
+.delete {
+	color: rgb(224, 85, 85);
 }

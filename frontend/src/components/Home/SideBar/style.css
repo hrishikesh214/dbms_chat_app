@@ -3,12 +3,13 @@
 	height: 100%;
 	border-top-left-radius: 10px;
 	border-bottom-left-radius: 10px;
-	background-color: #f1f1f1;
-	color: var(--primary);
+	background-color: var(--background);
 	font-weight: bold;
 	display: flex;
 	flex-direction: column;
 	overflow-y: auto;
+	padding-right: 10px;
+	border: none;
 }
 .side-bar-header {
 	border-top-left-radius: 10px;
@@ -17,24 +18,43 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+	color: white;
 }
 
 .list-chat {
+	color: white !important;
 	cursor: pointer;
-	color: black;
-	height: 50px;
+	color: var(--black);
+	height: 70px;
 	background-color: var(--secondary);
 	display: flex;
 	flex-direction: column;
 	padding: 0px 20px;
 	justify-content: space-between;
 	padding: 5px 20px;
+	border-radius: 7px;
+	margin: 5px 0;
 }
 .list-chat-ele {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+}
+.list-chat-ele > .desc {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+}
+.list-chat-ele > .desc > .time {
+	font-size: 10px;
+	text-align: center;
+	vertical-align: middle;
+	color: black;
+	padding: 2px;
+	background-color: rgba(0, 31, 206, 0.2);
+	border-radius: 5px;
+	width: 50px;
+	margin-left: 5px;
 }
 
 .list-chat-footer {
@@ -46,22 +66,17 @@
 }
 
 .list-chat-footer > .msg {
-	background-color: rgba(0, 31, 206, 0.2);
-	padding: 2px;
+	background-color: var(--field);
+	color: rgb(46, 46, 46);
+	padding: 5px;
 	border-radius: 5px;
-}
-.list-chat-footer > .time {
-	color: black;
-	padding: 2px;
-	background-color: rgba(0, 31, 206, 0.2);
-	border-radius: 5px;
-	width: 50px;
-	margin-left: 5px;
+	width: 99%;
+	margin: 5px 0;
 }
 
 .msg-count {
-	background-color: var(--primary);
-	color: black;
+	background-color: var(--background);
+	color: white;
 	border-radius: 50%;
 	width: 20px;
 	height: 20px;
@@ -78,19 +93,22 @@
 }
 .panel-btn {
 	cursor: pointer;
-	flex: 50%;
+	flex: 40%;
+	margin: 2px;
 	border: 1px solid var(--primary);
+	border-radius: 7px;
 	font-size: 1rem;
 	font-weight: bold;
-	background-color: var(--secondary);
+	background-color: var(--field);
 	width: 50%;
 	padding: 10px 0;
+	box-shadow: 0 0 10px var(--primary);
 }
 .is-online::after {
 	content: "";
 	width: 10px;
 	height: 10px;
-	background-color: rgb(0, 202, 0);
+	background-color: rgb(59, 252, 59);
 	border-radius: 50%;
 	display: inline-block;
 	margin-left: 5px;

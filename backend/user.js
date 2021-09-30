@@ -119,7 +119,7 @@ router.get("/:user_id/starred_messages", async (req, res) => {
 	} else
 		try {
 			let chats = db.query(
-				`select messages.id, messages.msg, messages.sender_id, messages.sent_at, people.username as 'sender_username' from starred_messages inner join messages inner join people on people.id = messages.sender_id on messages.id = starred_messages.msg_id where people.id = ${user_id}`,
+				`select messages.id, messages.msg, messages.sender_id, messages.sent_at, people.username as 'sender_username' from starred_messages inner join messages inner join people on people.id = messages.sender_id on messages.id = starred_messages.msg_id where starred_messages.user_id = ${user_id}`,
 				(err, result) => {
 					if (err) {
 						console.log(err)
