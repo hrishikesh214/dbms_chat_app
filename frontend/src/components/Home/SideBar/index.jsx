@@ -142,12 +142,13 @@ const SideBar = ({ user_id, refresher, onOpenChat }) => {
 				</div>
 
 				{chats.map((chat, index) => (
-					<div key={index} className="list-chat">
+					<div
+						onClick={(e) => open_chat(chat.id)}
+						key={index}
+						className="list-chat"
+					>
 						<div className="list-chat-ele">
-							<div
-								className={chat.status > 0 ? "is-online" : ""}
-								onClick={(e) => open_chat(chat.id)}
-							>
+							<div className={chat.status > 0 ? "is-online" : ""}>
 								{chat.username}
 							</div>
 							<div className="desc">

@@ -30,11 +30,15 @@ const Chat = ({ user_id, uname }) => {
 	 */
 	const scroll_bottom = () => {
 		if (bottomRef.current) {
-			bottomRef.current.scrollIntoView({ behavior: "smooth" })
+			bottomRef.current.scrollIntoView()
 		}
 	}
 
 	useEffect(() => {
+		if (cid === undefined && window.innerWidth < 550) {
+			document.getElementsByClassName("main-content")[0].style.display =
+				"none"
+		}
 		load_messages()
 		setInterval(worker, 2000)
 	}, [uname])
@@ -79,7 +83,6 @@ const Chat = ({ user_id, uname }) => {
 			})
 			if (r.status !== 200) throw defaults.network_error
 			if (!r.data.ok) throw r.data.error
-			console.log(r.data.result)
 			if (r.data.result === null) {
 				// window.location.href = `/`
 			}
@@ -173,7 +176,7 @@ const Chat = ({ user_id, uname }) => {
 				<div className="main-content">
 					<div className="main-content-header">
 						<div className="back-btn">
-							<Link to="/">Back</Link>
+							<a href="/">Back</a>
 						</div>
 						<div>{receiver}</div>
 					</div>

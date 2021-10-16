@@ -9,7 +9,7 @@ import express, { json } from "express" // express js
 import chalk from "chalk" // chalk for better output
 import { defaults } from "./required/configs.js" // custom settings
 import cors from "cors" // importing cors
-import db from "./required/db.js"
+import db, { dbquery } from "./required/db.js"
 import Result from "./required/Result.js"
 import initiator from "./required/initiator.js"
 
@@ -30,13 +30,18 @@ app.use("/user", user) // user routes
 
 app.get("/", async (req, res) => {
 	let r = new Result()
-	let s = db.query(
-		`select table_name as 'Tables'  from  information_schema.tables where table_schema = ${defaults.dbconfig.database}`,
-		(err, result, fields) => {
-			r.setResult(result)
-			res.send(r)
-		}
-	)
+	try {
+		let s = await dbquery(
+			`select table_name as 'Tables'  from  information_schema.tables where table_schema = '${defaults.dbconfig.database}'`
+		)
+		s = s?.map((x) => x.Tables)
+		r.setResult({ tables: s })
+	} catch (e) {
+		console.log(e)
+		r.setError(e)
+	}
+
+	res.send(r)
 })
 
 /**

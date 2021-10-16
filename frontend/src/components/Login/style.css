@@ -2,22 +2,24 @@
 	position: absolute;
 	width: 40vw;
 	height: 40vh;
-	background-color: var(--secondary);
+	border: 20px solid var(--background);
+	background-color: var(--white);
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	border-radius: 7px;
-	box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 7px var(--black);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	padding: 1rem;
+	color: var(--black);
 }
 .login-container > .header {
 	font-size: 2rem;
 	font-weight: bold;
-	color: black;
+	color: var(--black);
 	margin: 1rem 0;
 }
 .login-form > table > tr > td > input {
@@ -31,19 +33,24 @@
 	padding: 5px;
 	border-radius: 3px;
 	border: none;
-	background-color: var(--primary);
+	background-color: var(--field);
 	color: white;
 	font-weight: bold;
 	cursor: pointer;
 	font-size: 1rem;
 	margin: 10px 1rem;
 }
+.err-msg {
+	color: rgb(253, 1, 1);
+	font-weight: bold;
+}
 
 @media (max-width: 600px) {
 	.login-container {
-		width: 90vw;
+		width: 85vw;
 		height: 50vh;
 		border-radius: 0;
+		border-width: 10px;
 	}
 	.login-container > .header {
 		font-size: 1.5rem;

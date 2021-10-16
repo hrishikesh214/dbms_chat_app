@@ -37,7 +37,7 @@ const links = [
 		home: `http://localhost:3000/`,
 	},
 	{
-		home: `http://40.76.84.143/`,
+		home: ``,
 	},
 ]
 
