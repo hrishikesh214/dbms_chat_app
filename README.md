@@ -1,2 +1,1 @@
 # DBMS Project
-gg
